@@ -10,6 +10,8 @@ import com.hbm.items.machine.ItemMold.Mold;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
@@ -29,6 +31,15 @@ public abstract class TileEntityFoundryCastingBase extends TileEntityFoundryBase
 		super.updateEntity();
 		
 		if(!worldObj.isRemote) {
+			
+			if(this.amount > this.getCapacity()) {
+				this.amount = this.getCapacity();
+			}
+			
+			if(this.amount == 0) {
+				this.type = null;
+			}
+			
 			Mold mold = this.getInstalledMold();
 			
 			if(mold != null && this.amount == this.getCapacity() && slots[1] == null) {
@@ -121,10 +132,12 @@ public abstract class TileEntityFoundryCastingBase extends TileEntityFoundryBase
 		if(itemStack != null && itemStack.stackSize > getInventoryStackLimit()) {
 			itemStack.stackSize = getInventoryStackLimit();
 		}
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 	
 	@Override
 	public ItemStack decrStackSize(int slot, int amount) {
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		if(slots[slot] != null) {
 			if(slots[slot].stackSize <= amount) {
 				ItemStack itemStack = slots[slot];
@@ -167,4 +180,37 @@ public abstract class TileEntityFoundryCastingBase extends TileEntityFoundryBase
 
 	@Override public void openInventory() { }
 	@Override public void closeInventory() { }
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbt) {
+		super.readFromNBT(nbt);
+		
+		NBTTagList list = nbt.getTagList("items", 10);
+		slots = new ItemStack[getSizeInventory()];
+
+		for(int i = 0; i < list.tagCount(); i++) {
+			NBTTagCompound nbt1 = list.getCompoundTagAt(i);
+			byte b0 = nbt1.getByte("slot");
+			if(b0 >= 0 && b0 < slots.length) {
+				slots[b0] = ItemStack.loadItemStackFromNBT(nbt1);
+			}
+		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound nbt) {
+		super.writeToNBT(nbt);
+		
+		NBTTagList list = new NBTTagList();
+		
+		for(int i = 0; i < slots.length; i++) {
+			if(slots[i] != null) {
+				NBTTagCompound nbt1 = new NBTTagCompound();
+				nbt1.setByte("slot", (byte) i);
+				slots[i].writeToNBT(nbt1);
+				list.appendTag(nbt1);
+			}
+		}
+		nbt.setTag("items", list);
+	}
 }
