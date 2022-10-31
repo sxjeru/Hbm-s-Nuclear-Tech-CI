@@ -497,6 +497,7 @@ public class ModItems {
 	public static Item powder_cloud;
 	public static Item powder_balefire;
 	public static Item powder_sawdust;
+	public static Item powder_flux;
 
 	public static Item fragment_neodymium;
 	public static Item fragment_cobalt;
@@ -2290,6 +2291,7 @@ public class ModItems {
 	public static Item v1;
 	public static Item protection_charm;
 	public static Item meteor_charm;
+	public static Item neutrino_lens;
 
 	public static Item hazmat_helmet;
 	public static Item hazmat_plate;
@@ -3018,6 +3020,7 @@ public class ModItems {
 		powder_cloud = new Item().setUnlocalizedName("powder_cloud").setCreativeTab(MainRegistry.partsTab).setTextureName(RefStrings.MODID + ":powder_cloud");
 		powder_balefire = new Item().setUnlocalizedName("powder_balefire").setCreativeTab(MainRegistry.partsTab).setTextureName(RefStrings.MODID + ":powder_balefire");
 		powder_sawdust = new Item().setUnlocalizedName("powder_sawdust").setCreativeTab(MainRegistry.partsTab).setTextureName(RefStrings.MODID + ":powder_sawdust");
+		powder_flux = new Item().setUnlocalizedName("powder_flux").setCreativeTab(MainRegistry.partsTab).setTextureName(RefStrings.MODID + ":powder_flux");
 		powder_coltan_ore = new Item().setUnlocalizedName("powder_coltan_ore").setCreativeTab(MainRegistry.partsTab).setTextureName(RefStrings.MODID + ":powder_coltan_ore");
 		powder_coltan = new Item().setUnlocalizedName("powder_coltan").setCreativeTab(MainRegistry.partsTab).setTextureName(RefStrings.MODID + ":powder_coltan");
 		powder_tektite = new Item().setUnlocalizedName("powder_tektite").setCreativeTab(MainRegistry.partsTab).setTextureName(RefStrings.MODID + ":powder_tektite");
@@ -3523,6 +3526,7 @@ public class ModItems {
 		v1 = new ItemModV1().setUnlocalizedName("v1").setTextureName(RefStrings.MODID + ":v1");
 		protection_charm = new ItemModCharm().setUnlocalizedName("protection_charm").setTextureName(RefStrings.MODID + ":protection_charm");
 		meteor_charm = new ItemModCharm().setUnlocalizedName("meteor_charm").setTextureName(RefStrings.MODID + ":meteor_charm");
+		neutrino_lens = new ItemModLens().setUnlocalizedName("neutrino_lens").setTextureName(RefStrings.MODID + ":neutrino_lens");
 
 		cap_nuka = new Item().setUnlocalizedName("cap_nuka").setCreativeTab(MainRegistry.consumableTab).setTextureName(RefStrings.MODID + ":cap_nuka");
 		cap_quantum = new Item().setUnlocalizedName("cap_quantum").setCreativeTab(MainRegistry.consumableTab).setTextureName(RefStrings.MODID + ":cap_quantum");
@@ -6019,6 +6023,7 @@ public class ModItems {
 		GameRegistry.registerItem(powder_magic, powder_magic.getUnlocalizedName());
 		GameRegistry.registerItem(powder_cloud, powder_cloud.getUnlocalizedName());
 		GameRegistry.registerItem(powder_sawdust, powder_sawdust.getUnlocalizedName());
+		GameRegistry.registerItem(powder_flux, powder_flux.getUnlocalizedName());
 		GameRegistry.registerItem(powder_balefire, powder_balefire.getUnlocalizedName());
 		GameRegistry.registerItem(powder_semtex_mix, powder_semtex_mix.getUnlocalizedName());
 		GameRegistry.registerItem(powder_desh_mix, powder_desh_mix.getUnlocalizedName());
@@ -7815,6 +7820,7 @@ public class ModItems {
 		GameRegistry.registerItem(v1, v1.getUnlocalizedName());
 		GameRegistry.registerItem(protection_charm, protection_charm.getUnlocalizedName());
 		GameRegistry.registerItem(meteor_charm, meteor_charm.getUnlocalizedName());
+		GameRegistry.registerItem(neutrino_lens, neutrino_lens.getUnlocalizedName());
 		
 		//Chaos
 		GameRegistry.registerItem(chocolate_milk, chocolate_milk.getUnlocalizedName());

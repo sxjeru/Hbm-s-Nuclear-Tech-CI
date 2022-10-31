@@ -13,8 +13,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityFoundryOutlet extends TileEntityFoundryBase {
-	
+
 	public NTMMaterial filter = null;
+	public NTMMaterial lastFilter = null;
 	/** inverts redstone behavior, i.e. when TRUE, the outlet will be blocked by default and only open with redstone */
 	public boolean invertRedstone = false;
 	public boolean lastClosed = false;
@@ -30,7 +31,8 @@ public class TileEntityFoundryOutlet extends TileEntityFoundryBase {
 		
 		if(worldObj.isRemote) {
 			boolean isClosed = isClosed();
-			if(this.lastClosed != isClosed) {
+			if(this.lastClosed != isClosed || this.filter != this.lastFilter) {
+				this.lastFilter = this.filter;
 				this.lastClosed = isClosed;
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			}
@@ -45,6 +47,7 @@ public class TileEntityFoundryOutlet extends TileEntityFoundryBase {
 		
 		if(filter != null && filter != stack.material) return false;
 		if(isClosed()) return false;
+		if(side != ForgeDirection.getOrientation(this.getBlockMetadata()).getOpposite()) return false;
 		
 		Vec3 start = Vec3.createVectorHelper(x + 0.5, y - 0.125, z + 0.5);
 		Vec3 end = Vec3.createVectorHelper(x + 0.5, y + 0.125 - 4, z + 0.5);
