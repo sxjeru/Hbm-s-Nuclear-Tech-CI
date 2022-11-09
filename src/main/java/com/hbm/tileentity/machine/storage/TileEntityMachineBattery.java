@@ -158,6 +158,8 @@ public class TileEntityMachineBattery extends TileEntityMachineBase implements I
 			
 			long prevPower = this.power;
 			
+			power = Library.chargeItemsFromTE(slots, 1, power, getMaxPower());
+			
 			//////////////////////////////////////////////////////////////////////
 			this.transmitPowerFairly();
 			//////////////////////////////////////////////////////////////////////
@@ -168,7 +170,6 @@ public class TileEntityMachineBattery extends TileEntityMachineBase implements I
 			this.lastRedstone = comp;
 			
 			power = Library.chargeTEFromItems(slots, 0, power, getMaxPower());
-			power = Library.chargeItemsFromTE(slots, 1, power, getMaxPower());
 
 			long avg = (power + prevPower) / 2;
 			this.delta = avg - this.log[0];
@@ -191,6 +192,7 @@ public class TileEntityMachineBattery extends TileEntityMachineBase implements I
 	
 	protected void transmitPowerFairly() {
 		
+		if(power == 0) return;
 		short mode = (short) this.getRelevantMode();
 		
 		//HasSets to we don'T have any duplicates
@@ -207,6 +209,7 @@ public class TileEntityMachineBattery extends TileEntityMachineBase implements I
 				IEnergyConductor con = (IEnergyConductor) te;
 				if(con.getPowerNet() != null) {
 					nets.add(con.getPowerNet());
+					con.getPowerNet().unsubscribe(this);
 					consumers.addAll(con.getPowerNet().getSubscribers());
 				}
 				
@@ -215,17 +218,12 @@ public class TileEntityMachineBattery extends TileEntityMachineBase implements I
 				consumers.add((IEnergyConnector) te);
 			}
 		}
-		
-		//ubsubscribe from all nets
-		nets.forEach(x -> x.unsubscribe(this));
 
 		//send power to buffered consumers, independent of nets
 		if(mode == mode_buffer || mode == mode_output) {
-			long oldPower = this.power;
 			List<IEnergyConnector> con = new ArrayList();
 			con.addAll(consumers);
-			long transfer = this.power - PowerNet.fairTransfer(con, this.power);
-			this.power = oldPower - transfer;
+			this.power = PowerNet.fairTransfer(con, this.power);
 		}
 		
 		//resubscribe to buffered nets, if necessary
