@@ -36,10 +36,12 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -49,6 +51,8 @@ public class TileEntityMachineFluidTank extends TileEntityMachineBase implements
 	public short mode = 0;
 	public static final short modes = 4;
 	public boolean hasExploded = false;
+	
+	public Explosion lastExplosion = null;
 	
 	public int age = 0;
 	public List<IFluidAcceptor> list = new ArrayList();
@@ -101,14 +105,13 @@ public class TileEntityMachineFluidTank extends TileEntityMachineBase implements
 			
 			if(tank.getFill() > 0) {
 				if(tank.getTankType().isAntimatter()) {
-					worldObj.newExplosion(null, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, 5, true, false);
-					this.hasExploded = true;
+					new ExplosionVNT(worldObj, xCoord + 0.5, yCoord + 1.5, zCoord + 0.5, 5F).makeAmat().setBlockAllocator(null).setBlockProcessor(null).explode();
+					this.explode();
 					this.tank.setFill(0);
 				}
 				
 				if(tank.getTankType().hasTrait(FT_Corrosive.class) && tank.getTankType().getTrait(FT_Corrosive.class).isHighlyCorrosive()) {
-					this.hasExploded = true;
-					this.tank.setFill(0);
+					this.explode();
 				}
 				
 				if(this.hasExploded) {
@@ -136,6 +139,13 @@ public class TileEntityMachineFluidTank extends TileEntityMachineBase implements
 		}
 	}
 	
+	/** called when the tank breaks due to hazardous materials or external force, can be used to quickly void part of the tank or spawn a mushroom cloud */
+	public void explode() {
+		this.hasExploded = true;
+		this.markChanged();
+	}
+	
+	/** called every tick post explosion, used for leaking fluid and spawning particles */
 	public void updateLeak(int amount) {
 		if(!hasExploded) return;
 		if(amount <= 0) return;
@@ -146,9 +156,11 @@ public class TileEntityMachineFluidTank extends TileEntityMachineBase implements
 		FluidType type = tank.getTankType();
 		
 		if(type.hasTrait(FT_Amat.class)) {
-			new ExplosionVNT(worldObj, xCoord + 0.5, yCoord + 1, zCoord + 0.5, 5F).makeAmat().explode();
+			new ExplosionVNT(worldObj, xCoord + 0.5, yCoord + 1.5, zCoord + 0.5, 5F).makeAmat().setBlockAllocator(null).setBlockProcessor(null).explode();
 			
 		} else if(tank.getTankType().hasTrait(FT_Flammable.class)) {
+			List<Entity> affected = worldObj.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(xCoord - 1.5, yCoord, zCoord - 1.5, xCoord + 2.5, yCoord + 5, zCoord + 2.5));
+			for(Entity e : affected) e.setFire(5);
 			Random rand = worldObj.rand;
 			ParticleUtil.spawnGasFlame(worldObj, xCoord + rand.nextDouble(), yCoord + 0.5 + rand.nextDouble(), zCoord + rand.nextDouble(), rand.nextGaussian() * 0.2, 0.1, rand.nextGaussian() * 0.2);
 			
@@ -211,8 +223,8 @@ public class TileEntityMachineFluidTank extends TileEntityMachineBase implements
 					yCoord,
 					zCoord - 2,
 					xCoord + 3,
-					yCoord + 2,
-					zCoord + 2
+					yCoord + 3,
+					zCoord + 3
 					);
 		}
 		
