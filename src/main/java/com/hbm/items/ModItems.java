@@ -789,6 +789,7 @@ public class ModItems {
 
 	public static Item piston_selenium;
 	public static Item piston_set;
+	public static Item drillbit;
 	
 	//public static Item crystal_energy;
 	//public static Item pellet_coolant;
@@ -934,7 +935,6 @@ public class ModItems {
 	public static Item radx;
 	public static Item siox;
 	public static Item pill_herbal;
-	public static Item pirfenidone;
 	public static Item xanax;
 	public static Item fmn;
 	public static Item five_htp;
@@ -2242,7 +2242,6 @@ public class ModItems {
 	public static Item attachment_mask;
 	public static Item attachment_mask_mono;
 	public static Item back_tesla;
-	public static Item rubber_gloves;
 	public static Item servo_set;
 	public static Item servo_set_desh;
 	public static Item pads_rubber;
@@ -3248,6 +3247,7 @@ public class ModItems {
 		
 		piston_selenium = new Item().setUnlocalizedName("piston_selenium").setCreativeTab(MainRegistry.controlTab).setMaxStackSize(1).setTextureName(RefStrings.MODID + ":piston_selenium");
 		piston_set = new ItemPistons().setUnlocalizedName("piston_set").setCreativeTab(MainRegistry.controlTab).setMaxStackSize(1);
+		drillbit = new ItemDrillbit().setUnlocalizedName("drillbit").setCreativeTab(MainRegistry.controlTab).setMaxStackSize(1);
 
 		//crystal_energy = new ItemCustomLore().setUnlocalizedName("crystal_energy").setCreativeTab(MainRegistry.controlTab).setMaxStackSize(1).setTextureName(RefStrings.MODID + ":crystal_energy");
 		//pellet_coolant = new ItemCustomLore().setUnlocalizedName("pellet_coolant").setMaxDamage(41400).setCreativeTab(MainRegistry.controlTab).setMaxStackSize(1).setTextureName(RefStrings.MODID + ":pellet_coolant");
@@ -3463,7 +3463,6 @@ public class ModItems {
 		radx = new ItemPill(0).setUnlocalizedName("radx").setCreativeTab(MainRegistry.consumableTab).setTextureName(RefStrings.MODID + ":radx");
 		siox = new ItemPill(0).setUnlocalizedName("siox").setCreativeTab(MainRegistry.consumableTab).setTextureName(RefStrings.MODID + ":siox");
 		pill_herbal = new ItemPill(0).setUnlocalizedName("pill_herbal").setCreativeTab(MainRegistry.consumableTab).setTextureName(RefStrings.MODID + ":pill_herbal");
-		pirfenidone = new ItemPill(0).setUnlocalizedName("pirfenidone").setCreativeTab(MainRegistry.consumableTab).setTextureName(RefStrings.MODID + ":pirfenidone");
 		xanax = new ItemPill(0).setUnlocalizedName("xanax").setCreativeTab(MainRegistry.consumableTab).setTextureName(RefStrings.MODID + ":xanax_2");
 		fmn = new ItemPill(0).setUnlocalizedName("fmn").setCreativeTab(MainRegistry.consumableTab).setTextureName(RefStrings.MODID + ":tablet");
 		five_htp = new ItemPill(0).setUnlocalizedName("five_htp").setCreativeTab(MainRegistry.consumableTab).setTextureName(RefStrings.MODID + ":5htp");
@@ -3484,7 +3483,6 @@ public class ModItems {
 		attachment_mask = new ItemModGasmask().setUnlocalizedName("attachment_mask").setTextureName(RefStrings.MODID + ":attachment_mask");
 		attachment_mask_mono = new ItemModGasmask().setUnlocalizedName("attachment_mask_mono").setTextureName(RefStrings.MODID + ":attachment_mask_mono");
 		back_tesla = new ItemModTesla().setUnlocalizedName("back_tesla").setTextureName(RefStrings.MODID + ":back_tesla");
-		rubber_gloves = new ItemModGloves().setUnlocalizedName("rubber_gloves").setTextureName(RefStrings.MODID + ":rubber_gloves");
 		servo_set = new ItemModServos().setUnlocalizedName("servo_set").setTextureName(RefStrings.MODID + ":servo_set");
 		servo_set_desh = new ItemModServos().setUnlocalizedName("servo_set_desh").setTextureName(RefStrings.MODID + ":servo_set_desh");
 		pads_rubber = new ItemModPads(0.5F).setUnlocalizedName("pads_rubber").setTextureName(RefStrings.MODID + ":pads_rubber");
@@ -6480,6 +6478,7 @@ public class ModItems {
 		//Engine Pieces
 		GameRegistry.registerItem(piston_selenium, piston_selenium.getUnlocalizedName());
 		GameRegistry.registerItem(piston_set, piston_set.getUnlocalizedName());
+		GameRegistry.registerItem(drillbit, drillbit.getUnlocalizedName());
 		
 		//Cells
 		GameRegistry.registerItem(cell_empty, cell_empty.getUnlocalizedName());
@@ -7707,7 +7706,6 @@ public class ModItems {
 		GameRegistry.registerItem(radx, radx.getUnlocalizedName());
 		GameRegistry.registerItem(siox, siox.getUnlocalizedName());
 		GameRegistry.registerItem(pill_herbal, pill_herbal.getUnlocalizedName());
-		GameRegistry.registerItem(pirfenidone, pirfenidone.getUnlocalizedName());
 		GameRegistry.registerItem(pill_iodine, pill_iodine.getUnlocalizedName());
 		GameRegistry.registerItem(xanax, xanax.getUnlocalizedName());
 		GameRegistry.registerItem(fmn, fmn.getUnlocalizedName());
@@ -7853,7 +7851,6 @@ public class ModItems {
 		GameRegistry.registerItem(attachment_mask, attachment_mask.getUnlocalizedName());
 		GameRegistry.registerItem(attachment_mask_mono, attachment_mask_mono.getUnlocalizedName());
 		GameRegistry.registerItem(back_tesla, back_tesla.getUnlocalizedName());
-		GameRegistry.registerItem(rubber_gloves, rubber_gloves.getUnlocalizedName());
 		GameRegistry.registerItem(servo_set, servo_set.getUnlocalizedName());
 		GameRegistry.registerItem(servo_set_desh, servo_set_desh.getUnlocalizedName());
 		GameRegistry.registerItem(pads_rubber, pads_rubber.getUnlocalizedName());
