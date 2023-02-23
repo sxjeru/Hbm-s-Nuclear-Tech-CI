@@ -164,6 +164,11 @@ public class ItemGunBase extends Item implements IHoldableWeapon, IItemHUD, IEqu
 	//whether or not the gun can shoot in its current state
 	protected boolean tryShoot(ItemStack stack, World world, EntityPlayer player, boolean main) {
 		
+		if(getIsReloading(stack) && mainConfig.reloadType == mainConfig.RELOAD_SINGLE) {
+			setReloadCycle(stack, 0);
+			setIsReloading(stack, false);
+		}
+		
 		if(main && getDelay(stack) == 0 && !getIsReloading(stack) && getItemWear(stack) < mainConfig.durability) {
 			return hasAmmo(stack, player, main);
 		}
@@ -312,11 +317,10 @@ public class ItemGunBase extends Item implements IHoldableWeapon, IItemHUD, IEqu
 		}
 		
 		if(getReloadCycle(stack) <= 0) {
-
 			
 			BulletConfiguration prevCfg = BulletConfigSyncingUtil.pullConfig(mainConfig.config.get(getMagType(stack)));
 			
-			if (getMag(stack) == 0)
+			if(getMag(stack) == 0)
 				resetAmmoType(stack, world, player);
 			
 			BulletConfiguration cfg = BulletConfigSyncingUtil.pullConfig(mainConfig.config.get(getMagType(stack)));
@@ -459,7 +463,9 @@ public class ItemGunBase extends Item implements IHoldableWeapon, IItemHUD, IEqu
 		list.add(I18nUtil.resolveKey(HbmCollection.durability, dura + " / " + mainConfig.durability));
 		
 		list.add("");
-		list.add(I18nUtil.resolveKey(HbmCollection.gunName, I18nUtil.resolveKey("gun.name." + mainConfig.name)));
+		String unloc = "gun.name." + mainConfig.name;
+		String loc = I18nUtil.resolveKey(unloc);
+		list.add(I18nUtil.resolveKey(HbmCollection.gunName, unloc.equals(loc) ? mainConfig.name : loc));
 		list.add(I18nUtil.resolveKey(HbmCollection.gunMaker, I18nUtil.resolveKey(mainConfig.manufacturer.getKey())));
 		
 		if(!mainConfig.comment.isEmpty()) {
