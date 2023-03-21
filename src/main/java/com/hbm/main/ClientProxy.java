@@ -745,6 +745,7 @@ public class ClientProxy extends ServerProxy {
 		RenderingRegistry.registerBlockHandler(new RenderBlockDecoModel(ModBlocks.deco_computer.getRenderType(), ResourceManager.deco_computer));
 		RenderingRegistry.registerBlockHandler(new RenderReeds());
 		RenderingRegistry.registerBlockHandler(new RenderRTTY());
+		RenderingRegistry.registerBlockHandler(new RenderDiFurnaceExtension());
 
 		RenderingRegistry.registerBlockHandler(new RenderFoundryBasin());
 		RenderingRegistry.registerBlockHandler(new RenderFoundryMold());
@@ -1796,6 +1797,17 @@ public class ClientProxy extends ServerProxy {
 			for(int i = 0; i < ejector.getAmount(); i++) {
 				ejector.spawnCasing(man, casingConfig, world, x, y, z, data.getFloat("pitch"), data.getFloat("yaw"), data.getBoolean("crouched"));
 			}
+		}
+		
+		if("foundry".equals(type)) {
+			int color = data.getInteger("color");
+			byte dir = data.getByte("dir");
+			float length = data.getFloat("len");
+			float base = data.getFloat("base");
+			float offset = data.getFloat("off");
+			
+			ParticleFoundry sploosh = new ParticleFoundry(man, world, x, y, z, color, dir, length, base, offset);
+			Minecraft.getMinecraft().effectRenderer.addEffect(sploosh);
 		}
 	}
 	
