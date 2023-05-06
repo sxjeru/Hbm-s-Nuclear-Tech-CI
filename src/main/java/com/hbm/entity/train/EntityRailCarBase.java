@@ -3,13 +3,21 @@ package com.hbm.entity.train;
 import com.hbm.blocks.rail.IRailNTM;
 import com.hbm.blocks.rail.IRailNTM.RailLeaveInfo;
 import com.hbm.blocks.rail.IRailNTM.TrackGauge;
+import com.hbm.main.MainRegistry;
+import com.hbm.packet.PacketDispatcher;
+import com.hbm.packet.PlayerInformPacket;
+import com.hbm.util.ChatBuilder;
+import com.hbm.util.ParticleUtil;
 import com.hbm.util.fauxpointtwelve.BlockPos;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -59,9 +67,11 @@ public abstract class EntityRailCarBase extends Entity {
 				--this.turnProgress;
 				this.setPosition(x, y, z);
 				this.setRotation(this.rotationYaw, this.rotationPitch);
+				this.setRotation((float)this.trainYaw, this.rotationPitch);
 			} else {
 				this.setPosition(this.posX, this.posY, this.posZ);
 				this.setRotation(this.rotationYaw, this.rotationPitch);
+				this.setRotation((float)this.trainYaw, this.rotationPitch);
 			}
 		} else {
 			
@@ -71,6 +81,9 @@ public abstract class EntityRailCarBase extends Entity {
 			if(corePos == null) {
 				this.derail();
 			} else {
+				this.prevPosX = this.posX;
+				this.prevPosY = this.posY;
+				this.prevPosZ = this.posZ;
 				this.setPosition(corePos.xCoord, corePos.yCoord, corePos.zCoord);
 				
 				anchor = this.getCurentAnchorPos(); //reset origin to new position
@@ -83,12 +96,13 @@ public abstract class EntityRailCarBase extends Entity {
 					this.rotationYaw = generateYaw(frontPos, backPos);
 				}
 			}
+			
+			PacketDispatcher.wrapper.sendTo(new PlayerInformPacket(new ChatComponentText("Yaw: " + this.rotationYaw), 665, 3000), (EntityPlayerMP) worldObj.playerEntities.get(0));
 		}
 	}
 	
 	public Vec3 getRelPosAlongRail(BlockPos anchor, double distanceToCover) {
 		
-		double overshoot = 0;
 		float yaw = this.rotationYaw;
 		
 		Vec3 next = Vec3.createVectorHelper(posX, posY, posZ);
@@ -99,6 +113,7 @@ public abstract class EntityRailCarBase extends Entity {
 			it++;
 			
 			if(it > 30) {
+				worldObj.createExplosion(this, posX, posY, posZ, 5F, false);
 				this.derail();
 				return null;
 			}
@@ -109,7 +124,7 @@ public abstract class EntityRailCarBase extends Entity {
 			Block block = worldObj.getBlock(x, y, z);
 			
 			Vec3 rot = Vec3.createVectorHelper(0, 0, 1);
-			rot.rotateAroundY(yaw);
+			rot.rotateAroundY((float) (-yaw * Math.PI / 180D));
 			
 			if(block instanceof IRailNTM) {
 				IRailNTM rail = (IRailNTM) block;
@@ -118,9 +133,11 @@ public abstract class EntityRailCarBase extends Entity {
 					RailLeaveInfo info = new RailLeaveInfo();
 					Vec3 prev = next;
 					next = rail.getTravelLocation(worldObj, x, y, z, posX, posY, posZ, rot.xCoord, rot.yCoord, rot.zCoord, distanceToCover, info);
-					overshoot = info.overshoot;
+					distanceToCover = info.overshoot;
 					anchor = info.pos;
 					yaw = generateYaw(next, prev);
+
+					//if(info.overshoot > 0) System.out.println("[" + (worldObj.getTotalWorldTime() % 100) + "] Left track " + ((Block) rail).getUnlocalizedName() + " with " + ((int)(info.overshoot * 100) / 100D) + "m more to go!");
 					
 				} else {
 					return null;
@@ -129,7 +146,7 @@ public abstract class EntityRailCarBase extends Entity {
 				return null;
 			}
 			
-		} while(overshoot != 0); //if there's still length to cover, keep going
+		} while(distanceToCover != 0); //if there's still length to cover, keep going
 		
 		return next;
 	}
@@ -156,7 +173,6 @@ public abstract class EntityRailCarBase extends Entity {
 	public void derail() {
 		isOnRail = false;
 		this.setDead();
-		worldObj.createExplosion(this, posX, posY, posZ, 1F, false);
 	}
 	
 	@SideOnly(Side.CLIENT)
