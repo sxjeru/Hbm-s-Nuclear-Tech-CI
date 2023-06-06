@@ -1,6 +1,8 @@
 ## Added
 * Laminate glass
   * A new variant of reinforced glass with higher blast resistance
+  * Also comes in pane shape
+* Reinforced glass panes
 * Chlorocalcite
   * A new bedrock ore, the powder can be heated in the combination furnace to make calcium and chlorine
 * Blocks for cadmium, TC and CD alloy
@@ -15,3 +17,5 @@
 * Retextured schrabidium batteries, the cap is now black instead of red
 
 ## Fixed
+* Fixed hydroreactive stat not applying when an item is dropped in the rain
+* Fixed the liquefactor not working with ore dictionary recipes
