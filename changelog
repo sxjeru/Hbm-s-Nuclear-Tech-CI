@@ -1,5 +1,6 @@
 ## Added
 * Machines now emit soot. Soot collects in units of 4x4 chunks, and spreads into neighboring regions. High levels of soot cause visible smog.
+  * The system has yet to be balanced, it's possible that only a few machines cause way too much soot or barely any
 * Gas artillery shells
   * Chlorine
   * Phosgene
@@ -15,7 +16,7 @@
   * Like regular bullets stamps but with infinite durability
 
 ## Changed
-* Updated russian localization
+* Updated russian and chinese localization
 * Mist now spawns cloud particles with the correct color instead of standard white
 * HE artillery shells and rockets now turn blocks into slag
 * The old static bunker structure has been removed and replaced with dynamically generated ones, using the same style of generation as vanilla strongholds.
@@ -27,3 +28,6 @@
 * Fixed turbofans not sucking in players
 * Fixed NTM skybox not applying to superflat worlds
 * Fixed breeding slot in the fusion reactor never resettingthe progress after completing an operation
+* Fixed potential issue where tanks would send fluids to invalidated tile entities, voiding themselves almost instantly
+* Fixed cadmium and technetium steel blocks not having ore dict names
+* Fixed potential crash regarding certain potion code running clientside
