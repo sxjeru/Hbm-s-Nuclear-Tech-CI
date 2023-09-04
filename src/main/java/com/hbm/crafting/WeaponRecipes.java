@@ -89,6 +89,7 @@ public class WeaponRecipes {
 		CraftingManager.addRecipeAuto(new ItemStack(ModItems.gun_revolver_silver, 1), new Object[] { "SSP", " TI", 'S', AL.plate(), 'P', ModItems.mechanism_revolver_2, 'T', ModItems.wire_tungsten, 'I', KEY_PLANKS });
 		CraftingManager.addRecipeAuto(new ItemStack(ModItems.gun_revolver_red, 1), new Object[] { "R ", " B", 'R', ModItems.key_red, 'B', ModItems.gun_revolver_blackjack });
 		CraftingManager.addRecipeAuto(new ItemStack(ModItems.gun_deagle, 1), new Object[] { "PPM", " BI", 'P', STEEL.plate(), 'B', ModItems.bolt_tungsten, 'I', ANY_PLASTIC.ingot(), 'M', ModItems.mechanism_rifle_1 });
+		CraftingManager.addRecipeAuto(new ItemStack(ModItems.gun_uac_pistol, 1), new Object[] { "IIM", " BI", 'B', ModItems.bolt_dura_steel, 'I', ANY_PLASTIC.ingot(), 'M', ModItems.mechanism_rifle_1 });
 		CraftingManager.addRecipeAuto(new ItemStack(ModItems.gun_revolver_cursed, 1), new Object[] { "TTM", "SRI", 'S', STEEL.plate(), 'I', STEEL.ingot(), 'R', ModItems.wire_red_copper, 'T', TI.plate(), 'M', ModItems.mechanism_revolver_2 });
 		CraftingManager.addRecipeAuto(new ItemStack(ModItems.gun_revolver_nightmare, 1), new Object[] { "SEM", " RW", 'S', STEEL.plate(), 'W', KEY_PLANKS, 'R', ModItems.wire_aluminium, 'E', ModItems.powder_power, 'M', ModItems.mechanism_revolver_2 });
 		CraftingManager.addRecipeAuto(new ItemStack(ModItems.gun_revolver_nightmare2, 1), new Object[] { "SSM", "RRW", 'S', OreDictManager.getReflector(), 'W', W.ingot(), 'R', ModItems.wire_gold, 'M', ModItems.mechanism_special });
@@ -196,7 +197,7 @@ public class WeaponRecipes {
 		CraftingManager.addRecipeAuto(new ItemStack(ModItems.ammo_12gauge, 12), new Object[] { " I ", "GCL", 'I', ModItems.pellet_buckshot, 'G', ModItems.ballistite, 'C', ModItems.casing_buckshot,  'L', ModItems.plate_polymer });
 		CraftingManager.addRecipeAuto(ModItems.ammo_12gauge.stackFromEnum(12, Ammo12Gauge.PERCUSSION), new Object[] { "G", "C", 'G', ModItems.ballistite, 'C', ModItems.casing_buckshot });
 		CraftingManager.addRecipeAuto(new ItemStack(ModItems.ammo_4gauge, 12), new Object[] { " I ", "GCL", 'I', ModItems.pellet_buckshot, 'G', ModItems.cordite, 'C', ModItems.casing_50, 'L', ModItems.plate_polymer });
-		CraftingManager.addRecipeAuto(ModItems.ammo_4gauge.stackFromEnum(12, Ammo4Gauge.SLUG), new Object[] { " I ", "GCL", 'I', PB.ingot(), 'G', ModItems.cordite, 'C', ModItems.casing_50, 'L', ModItems.plate_polymer });
+		CraftingManager.addRecipeAuto(ModItems.ammo_4gauge.stackFromEnum(12, Ammo4Gauge.SLUG), new Object[] { " I ", "GCL", 'I', STEEL.ingot(), 'G', ModItems.cordite, 'C', ModItems.casing_50, 'L', ModItems.plate_polymer });
 		CraftingManager.addRecipeAuto(ModItems.ammo_4gauge.stackFromEnum(12, Ammo4Gauge.FLECHETTE), new Object[] { " I ", "GCL", 'I', ModItems.pellet_flechette, 'G', ModItems.cordite, 'C', ModItems.casing_50, 'L', ModItems.plate_polymer });
 		CraftingManager.addRecipeAuto(ModItems.ammo_4gauge.stackFromEnum(4, Ammo4Gauge.EXPLOSIVE), new Object[] { " I ", "GCL", 'I', ModBlocks.tnt, 'G', ModItems.cordite, 'C', ModItems.casing_50, 'L', ModItems.plate_polymer });
 		CraftingManager.addRecipeAuto(ModItems.ammo_4gauge.stackFromEnum(6, Ammo4Gauge.EXPLOSIVE), new Object[] { " I ", "GCL", 'I', ANY_PLASTICEXPLOSIVE.ingot(), 'G', ModItems.cordite, 'C', ModItems.casing_50, 'L', ModItems.plate_polymer });
