@@ -125,7 +125,7 @@ public class MainRegistry {
 	public static ToolMaterial tMatCMB = EnumHelper.addToolMaterial("HBM_CMB", 3, 8500, 40.0F, 55F, 100);
 	public static ToolMaterial tMatElec = EnumHelper.addToolMaterial("HBM_ELEC", 3, 0, 30.0F, 12.0F, 2);
 	public static ToolMaterial tMatDesh = EnumHelper.addToolMaterial("HBM_DESH", 2, 0, 7.5F, 2.0F, 10);
-	public static ToolMaterial tMatCobalt = EnumHelper.addToolMaterial("HBM_COBALT", 3, 750, 9.0F, 2.5F, 15);
+	public static ToolMaterial tMatCobalt = EnumHelper.addToolMaterial("HBM_COBALT", 3, 750, 9.0F, 2.5F, 60);
 
 	public static ToolMaterial enumToolMaterialSaw = EnumHelper.addToolMaterial("SAW", 2, 750, 2.0F, 3.5F, 25);
 	public static ToolMaterial enumToolMaterialBat = EnumHelper.addToolMaterial("BAT", 0, 500, 1.5F, 3F, 25);
@@ -154,7 +154,7 @@ public class MainRegistry {
 	public static ArmorMaterial aMatCMB = EnumHelper.addArmorMaterial("HBM_CMB", 60, new int[] { 3, 8, 6, 3 }, 50);
 	public static ArmorMaterial aMatAus3 = EnumHelper.addArmorMaterial("HBM_AUSIII", 375, new int[] { 2, 6, 5, 2 }, 0);
 	public static ArmorMaterial aMatSecurity = EnumHelper.addArmorMaterial("HBM_SECURITY", 100, new int[] { 3, 8, 6, 3 }, 15);
-	public static ArmorMaterial aMatCobalt = EnumHelper.addArmorMaterial("HBM_COBALT", 70, new int[] { 3, 8, 6, 3 }, 25);
+	public static ArmorMaterial aMatCobalt = EnumHelper.addArmorMaterial("HBM_COBALT", 70, new int[] { 3, 8, 6, 3 }, 60);
 	public static ArmorMaterial aMatStarmetal = EnumHelper.addArmorMaterial("HBM_STARMETAL", 150, new int[] { 3, 8, 6, 3 }, 100);
 	public static ArmorMaterial aMatBismuth = EnumHelper.addArmorMaterial("HBM_BISMUTH", 100, new int[] { 3, 8, 6, 3 }, 100);
 
@@ -1163,6 +1163,16 @@ public class MainRegistry {
 		ignoreMappings.add("hbm:item.primer_50");
 		ignoreMappings.add("hbm:item.primer_buckshot");
 		ignoreMappings.add("hbm:tile.ore_bedrock_coltan");
+		ignoreMappings.add("hbm:item.recycled_ground");
+		ignoreMappings.add("hbm:item.recycled_rock");
+		ignoreMappings.add("hbm:item.recycled_metal");
+		ignoreMappings.add("hbm:item.recycled_refined");
+		ignoreMappings.add("hbm:item.recycled_organic");
+		ignoreMappings.add("hbm:item.recycled_crystal");
+		ignoreMappings.add("hbm:item.recycled_explosive");
+		ignoreMappings.add("hbm:item.recycled_electronic");
+		ignoreMappings.add("hbm:item.recycled_nuclear");
+		ignoreMappings.add("hbm:item.recycled_misc");
 		
 		/// REMAP ///
 		remapItems.put("hbm:item.gadget_explosive8", ModItems.early_explosive_lenses);
