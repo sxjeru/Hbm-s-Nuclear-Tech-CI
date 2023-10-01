@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import com.hbm.inventory.RecipesCommon.AStack;
+import com.hbm.util.HashedSet;
 import com.hbm.util.fauxpointtwelve.BlockPos;
 
 import net.minecraft.item.ItemStack;
@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 public class RequestNetwork {
 	
 	private static int timer = 0;
-	public static HashMap<World, HashMap<ChunkCoordIntPair, Set<PathNode>>> activeWaypoints = new HashMap();
+	public static HashMap<World, HashMap<ChunkCoordIntPair, HashedSet<PathNode>>> activeWaypoints = new HashMap();
 	public static final int maxAge = 2_000;
 
 	public static void updateEntries() {
@@ -32,13 +32,13 @@ public class RequestNetwork {
 		
 		// iterate over each dim
 		while(worldIt.hasNext()) {
-			Entry<World, HashMap<ChunkCoordIntPair, Set<PathNode>>> worldEntry = (Entry) worldIt.next();
+			Entry<World, HashMap<ChunkCoordIntPair, HashedSet<PathNode>>> worldEntry = (Entry) worldIt.next();
 			Iterator chunkIt = worldEntry.getValue().entrySet().iterator();
 			
 			// iterate over each chunk
 			while(chunkIt.hasNext()) {
 				
-				Entry<ChunkCoordIntPair, Set<PathNode>> chunkEntry = (Entry) chunkIt.next();
+				Entry<ChunkCoordIntPair, HashedSet<PathNode>> chunkEntry = (Entry) chunkIt.next();
 				Iterator<PathNode> pathIt = chunkEntry.getValue().iterator();
 				
 				// iterate over each path node
@@ -47,6 +47,7 @@ public class RequestNetwork {
 					
 					// if the lease timestamp is too far back, time out the node
 					if(node.lease < System.currentTimeMillis() - maxAge) {
+						node.reachableNodes.clear(); // just to be sure there's no cyclical references happening creating memory leaks
 						pathIt.remove();
 					}
 				}
@@ -69,8 +70,10 @@ public class RequestNetwork {
 	public static class PathNode {
 		public BlockPos pos;
 		public long lease;
-		public PathNode(BlockPos pos) {
+		public HashedSet<PathNode> reachableNodes = new HashedSet();
+		public PathNode(BlockPos pos, HashedSet<PathNode> reachableNodes) {
 			this.pos = pos;
+			this.reachableNodes = new HashedSet(reachableNodes);
 			this.lease = System.currentTimeMillis();
 		}
 		@Override public int hashCode() { return pos.hashCode(); }
@@ -80,8 +83,8 @@ public class RequestNetwork {
 	/** Node created by providers, lists available items */
 	public static class OfferNode extends PathNode {
 		public List<ItemStack> offer;
-		public OfferNode(BlockPos pos, List<ItemStack> offer) {
-			super(pos);
+		public OfferNode(BlockPos pos, HashedSet<PathNode> reachableNodes, List<ItemStack> offer) {
+			super(pos, reachableNodes);
 			this.offer = offer;
 		}
 	}
@@ -89,8 +92,8 @@ public class RequestNetwork {
 	/** Node created by requesters, lists requested AStacks */
 	public static class RequestNode extends PathNode {
 		public List<AStack> request;
-		public RequestNode(BlockPos pos, List<AStack> request) {
-			super(pos);
+		public RequestNode(BlockPos pos, HashedSet<PathNode> reachableNodes, List<AStack> request) {
+			super(pos, reachableNodes);
 			this.request = request;
 		}
 	}

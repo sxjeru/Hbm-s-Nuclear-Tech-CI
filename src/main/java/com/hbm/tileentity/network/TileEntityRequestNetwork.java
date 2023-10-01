@@ -1,14 +1,17 @@
 package com.hbm.tileentity.network;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
+import com.hbm.packet.AuxParticlePacketNT;
+import com.hbm.packet.PacketDispatcher;
 import com.hbm.tileentity.network.RequestNetwork.PathNode;
+import com.hbm.util.HashedSet;
 import com.hbm.util.ParticleUtil;
 import com.hbm.util.fauxpointtwelve.BlockPos;
 
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -27,8 +30,8 @@ import net.minecraft.world.World;
  */
 public abstract class TileEntityRequestNetwork extends TileEntity {
 
-	public Set<PathNode> reachableNodes = new HashSet();
-	public Set<PathNode> knownNodes = new HashSet();
+	public HashedSet<PathNode> reachableNodes = new HashedSet();
+	public HashedSet<PathNode> knownNodes = new HashedSet();
 	public static final int maxRange = 24;
 	
 	@Override
@@ -44,7 +47,8 @@ public abstract class TileEntityRequestNetwork extends TileEntity {
 				// remove known nodes that no longer exist
 				// since we can assume a sane number of nodes to exist at any given time, we can run this check in full every second
 				Iterator<PathNode> it = knownNodes.iterator();
-				Set<PathNode> localNodes = this.getAllLocalNodes(worldObj, xCoord, zCoord, 2); // this bit may spiral into multiple nested hashtable lookups but it's limited to only a few chunks so it shouldn't be an issue
+				HashedSet<PathNode> localNodes = this.getAllLocalNodes(worldObj, xCoord, zCoord, 2); // this bit may spiral into multiple nested hashtable lookups but it's limited to only a few chunks so it shouldn't be an issue
+				localNodes.remove(pos);
 				while(it.hasNext()) {
 					PathNode node = it.next();
 					if(!localNodes.contains(node)) {
@@ -60,6 +64,13 @@ public abstract class TileEntityRequestNetwork extends TileEntity {
 							(known.pos.getX()  - pos.getX()) / 2D, (known.pos.getY() - pos.getY()) / 2D, (known.pos.getZ() - pos.getZ()) / 2D,
 							reachableNodes.contains(known) ? 0x00ff00 : 0xff0000);
 				}
+
+				NBTTagCompound data = new NBTTagCompound();
+				data.setString("type", "debug");
+				data.setInteger("color", 0x0000ff);
+				data.setFloat("scale", 1.5F);
+				data.setString("text", knownNodes.size() + " / " + reachableNodes.size() + " / " + localNodes.size());
+				PacketDispatcher.wrapper.sendToAllAround(new AuxParticlePacketNT(data, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new TargetPoint(this.worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 50));
 				
 				//both following checks run the `hasPath` function which is costly, so it only runs one op at a time
 				
@@ -124,7 +135,7 @@ public abstract class TileEntityRequestNetwork extends TileEntity {
 	 */
 	public static void push(World world, PathNode node) {
 		
-		HashMap<ChunkCoordIntPair, Set<PathNode>> coordMap = RequestNetwork.activeWaypoints.get(world);
+		HashMap<ChunkCoordIntPair, HashedSet<PathNode>> coordMap = RequestNetwork.activeWaypoints.get(world);
 		
 		if(coordMap == null) {
 			coordMap = new HashMap();
@@ -132,10 +143,10 @@ public abstract class TileEntityRequestNetwork extends TileEntity {
 		}
 		
 		ChunkCoordIntPair chunkPos = new ChunkCoordIntPair(node.pos.getX() >> 4, node.pos.getZ() >> 4);
-		Set<PathNode> posList = coordMap.get(chunkPos);
+		HashedSet<PathNode> posList = coordMap.get(chunkPos);
 		
 		if(posList == null) {
-			posList = new HashSet();
+			posList = new HashedSet();
 			coordMap.put(chunkPos, posList);
 		}
 		
@@ -150,29 +161,32 @@ public abstract class TileEntityRequestNetwork extends TileEntity {
 	 * @param z
 	 * @return
 	 */
-	public static Set<PathNode> getAllLocalNodes(World world, int x, int z, int range) {
-		
-		Set<PathNode> nodes = new HashSet();
+	public static HashedSet<PathNode> getAllLocalNodes(World world, int x, int z, int range) {
+
+		HashedSet<PathNode> nodes = new HashedSet();
+		HashedSet<BlockPos> pos = new HashedSet();
 
 		x >>= 4;
 		z >>= 4;
 		
-		HashMap<ChunkCoordIntPair, Set<PathNode>> coordMap = RequestNetwork.activeWaypoints.get(world);
+		HashMap<ChunkCoordIntPair, HashedSet<PathNode>> coordMap = RequestNetwork.activeWaypoints.get(world);
 		
 		if(coordMap == null) return nodes;
 		
 		for(int i = -range; i <= range; i++) {
 			for(int j = -range; j <= range; j++) {
 				
-				Set<PathNode> nodeList = coordMap.get(new ChunkCoordIntPair(x + i, z + j));
+				HashedSet<PathNode> nodeList = coordMap.get(new ChunkCoordIntPair(x + i, z + j));
 				
 				if(nodeList != null) for(PathNode node : nodeList) {
-					nodes.add(node);
+					if(!pos.contains(node.pos)) {
+						nodes.add(node);
+						//pos.add(node.pos);
+					}
 				}
 			}
 		}
 		
 		return nodes;
 	}
-
 }
