@@ -15,7 +15,7 @@ jobs:
     # REQUIRED step
     # Step 1: run a standard checkout action, provided by github
     - name: Checkout target repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         # optional: set the branch to checkout,
         # sync action checks out your 'target_sync_branch' anyway
@@ -27,7 +27,7 @@ jobs:
     # Step 2: run the sync action
     - name: Sync upstream changes
       id: sync
-      uses: aormsby/Fork-Sync-With-Upstream-action@v3.2
+      uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
       with:
         target_sync_branch: master
         # REQUIRED 'target_repo_token' exactly like this!
@@ -39,7 +39,7 @@ jobs:
         target_branch_push_args: --force
 
         # Set test_mode true to run tests instead of the true action!!
-        test_mode: false
+        test_mode: true
       
     # Step 3: Display a sample message based on the sync output var 'has_new_commits'
     - name: New commits found
