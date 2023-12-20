@@ -171,6 +171,9 @@ public class FluidType {
 	public boolean needsLeadContainer() {
 		return this.traits.containsKey(FT_LeadContainer.class);
 	}
+	public boolean isDispersable() {
+		return !(this.traits.containsKey(FT_Amat.class) || this.traits.containsKey(FT_NoContainer.class) || this.traits.containsKey(FT_Viscous.class));
+	}
 
 	/**
 	 * Called when the tile entity is broken, effectively voiding the fluids.
@@ -218,8 +221,9 @@ public class FluidType {
 				info.addAll(hidden);
 			} else {
 
-				info.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC +I18nUtil.resolveKey("tooltip.block" ,
-						EnumChatFormatting.YELLOW +"" + EnumChatFormatting.ITALIC + "LSHIFT"));
+				info.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC +"Hold <" +
+						EnumChatFormatting.YELLOW + "" + EnumChatFormatting.ITALIC + "LSHIFT" +
+						EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + "> to display more info");
 			}
 		}
 	}

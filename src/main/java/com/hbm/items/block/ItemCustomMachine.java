@@ -5,7 +5,6 @@ import java.util.List;
 import com.hbm.config.CustomMachineConfigJSON;
 import com.hbm.config.CustomMachineConfigJSON.MachineConfiguration;
 
-import com.hbm.util.I18nUtil;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -18,6 +17,8 @@ public class ItemCustomMachine extends ItemBlock {
 
 	public ItemCustomMachine(Block block) {
 		super(block);
+		this.setMaxDamage(0);
+		this.setHasSubtypes(true);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -38,7 +39,7 @@ public class ItemCustomMachine extends ItemBlock {
 			MachineConfiguration conf = CustomMachineConfigJSON.niceList.get(id);
 			
 			if(conf != null) {
-				return (I18nUtil.resolveKey("tile.cm_" + conf.unlocalizedName + ".name").startsWith("tile.cm_")) ? conf.localizedName : I18nUtil.resolveKey("tile.cm_" + conf.unlocalizedName + ".name");
+				return conf.localizedName;
 			}
 		}
 		

@@ -6,6 +6,13 @@ import java.util.List;
 import com.hbm.entity.logic.IChunkLoader;
 import com.hbm.entity.projectile.EntityThrowableInterp;
 import com.hbm.explosion.ExplosionLarge;
+import com.hbm.explosion.vanillant.ExplosionVNT;
+import com.hbm.explosion.vanillant.standard.BlockAllocatorStandard;
+import com.hbm.explosion.vanillant.standard.BlockMutatorFire;
+import com.hbm.explosion.vanillant.standard.BlockProcessorStandard;
+import com.hbm.explosion.vanillant.standard.EntityProcessorCross;
+import com.hbm.explosion.vanillant.standard.ExplosionEffectStandard;
+import com.hbm.explosion.vanillant.standard.PlayerProcessorStandard;
 import com.hbm.main.MainRegistry;
 
 import api.hbm.entity.IRadarDetectable;
@@ -215,10 +222,10 @@ public abstract class EntityMissileBaseNT extends EntityThrowableInterp implemen
 	}
 
 	protected void killMissile() {
+		this.setDead();
 		ExplosionLarge.explode(worldObj, posX, posY, posZ, 5, true, false, true);
 		ExplosionLarge.spawnShrapnelShower(worldObj, posX, posY, posZ, motionX, motionY, motionZ, 15, 0.075);
 		ExplosionLarge.spawnMissileDebris(worldObj, posX, posY, posZ, motionX, motionY, motionZ, 0.25, getDebris(), getDebrisRareDrop());
-		this.killAndClear();
 	}
 	
 	@Override
@@ -231,7 +238,7 @@ public abstract class EntityMissileBaseNT extends EntityThrowableInterp implemen
 	protected void onImpact(MovingObjectPosition mop) {
 		if(mop != null && mop.typeOfHit == mop.typeOfHit.BLOCK) {
 			this.onImpact();
-			this.killAndClear();
+			this.setDead();
 		}
 	}
 
@@ -290,8 +297,9 @@ public abstract class EntityMissileBaseNT extends EntityThrowableInterp implemen
 		}
 	}
 	
-	public void killAndClear() {
-		this.setDead();
+	@Override
+	public void setDead() {
+		super.setDead();
 		this.clearChunkLoader();
 	}
 	
@@ -301,5 +309,16 @@ public abstract class EntityMissileBaseNT extends EntityThrowableInterp implemen
 				ForgeChunkManager.unforceChunk(loaderTicket, chunk);
 			}
 		}
+	}
+	
+	public void explodeStandard(float strength, int resolution, boolean fire, boolean largeSmoke) {
+		ExplosionVNT xnt = new ExplosionVNT(worldObj, posX, posY, posZ, strength);
+		xnt.setBlockAllocator(new BlockAllocatorStandard(resolution));
+		xnt.setBlockProcessor(new BlockProcessorStandard().setNoDrop().withBlockEffect(fire ? new BlockMutatorFire() : null));
+		xnt.setEntityProcessor(new EntityProcessorCross(7.5D).withRangeMod(2));
+		xnt.setPlayerProcessor(new PlayerProcessorStandard());
+		xnt.setSFX(new ExplosionEffectStandard());
+		if(largeSmoke) ExplosionLarge.spawnParticles(worldObj, posX, posY, posZ, ExplosionLarge.cloudFunction((int) strength));
+		xnt.explode();
 	}
 }
