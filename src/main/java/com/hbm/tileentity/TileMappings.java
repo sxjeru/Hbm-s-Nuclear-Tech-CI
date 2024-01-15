@@ -112,6 +112,7 @@ public class TileMappings {
 		put(TileEntityMachineRadGen.class, "tileentity_radgen");
 		put(TileEntityMachineTransformer.class, "tileentity_transformer");
 		put(TileEntityMachineRadarNT.class, "tileentity_radar");
+		put(TileEntityMachineRadarLarge.class, "tileentity_radar_large");
 		put(TileEntityMachineRadarScreen.class, "tileentity_radar_screen");
 		put(TileEntityBroadcaster.class, "tileentity_pink_cloud_broadcaster");
 		put(TileEntityMachineSeleniumEngine.class, "tileentity_selenium_engine");
@@ -291,6 +292,7 @@ public class TileMappings {
 		put(TileEntityFoundryOutlet.class, "tileentity_foundry_outlet");
 		put(TileEntityFoundrySlagtap.class, "tileentity_foundry_slagtap");
 		put(TileEntitySlag.class, "tileentity_foundry_slag");
+		put(TileEntityMachineStrandCaster.class, "tileentity_strand_caster");
 
 		put(TileEntityMachineAutocrafter.class, "tileentity_autocrafter");
 		put(TileEntityMachineFunnel.class, "tileentity_funnel");
