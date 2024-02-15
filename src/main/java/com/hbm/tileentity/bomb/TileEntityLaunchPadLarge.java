@@ -1,6 +1,5 @@
 package com.hbm.tileentity.bomb;
 
-import com.hbm.entity.missile.EntityMissileBaseNT;
 import com.hbm.items.weapon.ItemMissile;
 import com.hbm.items.weapon.ItemMissile.MissileFormFactor;
 import com.hbm.main.MainRegistry;
@@ -13,7 +12,6 @@ import api.hbm.fluid.IFluidStandardReceiver;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 
@@ -43,10 +41,8 @@ public class TileEntityLaunchPadLarge extends TileEntityLaunchPadBase implements
 	protected boolean liftMoving = false;
 	protected boolean erectorMoving = false;
 
-	@Override
-	public boolean isReadyForLaunch() {
-		return this.erected && this.readyToLoad;
-	}
+	@Override public boolean isReadyForLaunch() { return this.erected && this.readyToLoad; }
+	@Override public double getLaunchOffset() { return 2D; }
 
 	@Override
 	public void updateEntity() {
@@ -63,7 +59,6 @@ public class TileEntityLaunchPadLarge extends TileEntityLaunchPadBase implements
 				if(slots[0].getItem() instanceof ItemMissile) {
 					ItemMissile missile = (ItemMissile) slots[0].getItem();
 					this.formFactor = missile.formFactor.ordinal();
-					setFuel(missile);
 					
 					if(missile.formFactor == MissileFormFactor.ATLAS || missile.formFactor == MissileFormFactor.HUGE) {
 						erectorSpeed /= 2F;
@@ -187,6 +182,22 @@ public class TileEntityLaunchPadLarge extends TileEntityLaunchPadBase implements
 					this.audioErector = null;
 				}
 			}
+			
+			if(this.erected && (this.formFactor == MissileFormFactor.HUGE.ordinal() || this.formFactor == MissileFormFactor.ATLAS.ordinal()) && this.tanks[1].getFill() > 0) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setString("type", "tower");
+				data.setFloat("lift", 0F);
+				data.setFloat("base", 0.5F);
+				data.setFloat("max", 2F);
+				data.setInteger("life", 70 + worldObj.rand.nextInt(30));
+				data.setDouble("posX", xCoord + 0.5 + worldObj.rand.nextGaussian() * 0.5);
+				data.setDouble("posZ", zCoord + 0.5 + worldObj.rand.nextGaussian() * 0.5);
+				data.setDouble("posY", yCoord + 2);
+				data.setBoolean("noWind", true);
+				data.setFloat("alphaMod", 2F);
+				data.setFloat("strafe", 0.05F);
+				for(int i = 0; i < 3; i++) MainRegistry.proxy.effectNT(data);
+			}
 		}
 		
 		super.updateEntity();
@@ -242,17 +253,6 @@ public class TileEntityLaunchPadLarge extends TileEntityLaunchPadBase implements
 		nbt.setFloat("lift", lift);
 		nbt.setFloat("erector", erector);
 		nbt.setInteger("formFactor", formFactor);
-	}
-	
-	public Entity instantiateMissile(int targetX, int targetZ) {
-		Entity missile = super.instantiateMissile(targetX, targetZ);
-		
-		if(missile instanceof EntityMissileBaseNT) {
-			EntityMissileBaseNT base = (EntityMissileBaseNT) missile;
-			base.getDataWatcher().updateObject(3, (byte) (this.getBlockMetadata() - 10));
-		}
-		
-		return missile;
 	}
 	
 	AxisAlignedBB bb = null;
