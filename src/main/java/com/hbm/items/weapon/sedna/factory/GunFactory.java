@@ -40,6 +40,7 @@ public class GunFactory {
 						.dmg(10F).delay(14).reload(46).sound("hbm:weapon.44Shoot", 1.0F, 1.0F)
 						.mag(new MagazineFullReload(0, 12).addConfigs(ammo_debug, ammo_debug_buckshot))
 						.ejector(new CasingEjector().setMotion(0, -0.1, 0).setAngleRange(0.01F, 0.025F))
+						.offset(0.75, -0.0625, -0.3125D)
 						.canFire(Lego.LAMBDA_STANDARD_CAN_FIRE).fire(Lego.LAMBDA_STANDARD_FIRE))
 				.pp(Lego.LAMBDA_STANDARD_CLICK_PRIMARY) .pr(Lego.LAMBDA_STANDARD_RELOAD) .pt(Lego.LAMBDA_TOGGLE_AIM)
 				.decider(GunStateDecider.LAMBDA_STANDARD_DECIDER)
@@ -49,20 +50,16 @@ public class GunFactory {
 		XFactoryBlackPowder.init();
 		XFactory357.init();
 		XFactory44.init();
+		XFactory9mm.init();
 
 		/// PROXY BULLSHIT ///
 		MainRegistry.proxy.registerGunCfg();
 	}
 	
 	public static enum EnumAmmo {
-		STONE,
-		STONE_AP,
-		STONE_IRON,
-		STONE_SHOT,
-		M357_SP,
-		M357_FMJ,
-		M357_JHP,
-		M357_AP,
-		M357_EXPRESS,
+		STONE, STONE_AP, STONE_IRON, STONE_SHOT,
+		M357_SP, M357_FMJ, M357_JHP, M357_AP, M357_EXPRESS,
+		M44_SP, M44_FMJ, M44_JHP, M44_AP, M44_EXPRESS,
+		P9_SP, P9_FMJ, P9_JHP, P9_AP,
 	}
 }
