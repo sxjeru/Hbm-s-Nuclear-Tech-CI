@@ -88,7 +88,7 @@ public class Lego {
 				
 				if(rec.getDoesDryFire(stack)) {
 					ItemGunBaseNT.playAnimation(player, stack, AnimType.CYCLE_DRY, index);
-					ItemGunBaseNT.setState(stack, index, GunState.DRAWING);
+					ItemGunBaseNT.setState(stack, index, rec.getDoesDryFireAfterAuto(stack) ? GunState.COOLDOWN : GunState.DRAWING);
 					ItemGunBaseNT.setTimer(stack, index, rec.getDelayAfterDryFire(stack));
 				}
 			}
@@ -195,9 +195,9 @@ public class Lego {
 		double heightOffset = offset.yCoord;
 		double sideOffset = ItemGunBaseNT.getIsAiming(stack) ? 0 : offset.zCoord;
 		
-		/*forwardOffset = 1;
-		heightOffset = -0.0625 * 1.5;
-		sideOffset = -0.1875D;*/
+		/*forwardOffset = 0.75;
+		heightOffset = -0.125;
+		sideOffset = -0.25D;*/
 		
 		int projectiles = config.projectilesMin;
 		if(config.projectilesMax > config.projectilesMin) projectiles += entity.getRNG().nextInt(config.projectilesMax - config.projectilesMin + 1);
