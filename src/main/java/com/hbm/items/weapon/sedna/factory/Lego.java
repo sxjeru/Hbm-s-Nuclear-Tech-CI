@@ -51,7 +51,7 @@ public class Lego {
 			IMagazine mag = rec.getMagazine(stack);
 			
 			if(mag.canReload(stack, ctx.inventory)) {
-				int loaded = mag.getAmount(stack);
+				int loaded = mag.getAmount(stack, ctx.inventory);
 				mag.setAmountBeforeReload(stack, loaded);
 				ItemGunBaseNT.setState(stack, ctx.configIndex, GunState.RELOADING);
 				ItemGunBaseNT.setTimer(stack, ctx.configIndex, rec.getReloadBeginDuration(stack) + (loaded <= 0 ? rec.getReloadCockOnEmptyPre(stack) : 0));
@@ -158,10 +158,10 @@ public class Lego {
 	public static BiConsumer<ItemStack, LambdaContext> LAMBDA_TOGGLE_AIM = (stack, ctx) -> { ItemGunBaseNT.setIsAiming(stack, !ItemGunBaseNT.getIsAiming(stack)); };
 
 	/** Returns true if the mag has ammo in it. Used by keybind functions on whether to fire, and deciders on whether to trigger a refire. */
-	public static BiFunction<ItemStack, LambdaContext, Boolean> LAMBDA_STANDARD_CAN_FIRE = (stack, ctx) -> { return ctx.config.getReceivers(stack)[0].getMagazine(stack).getAmount(stack) > 0; };
+	public static BiFunction<ItemStack, LambdaContext, Boolean> LAMBDA_STANDARD_CAN_FIRE = (stack, ctx) -> { return ctx.config.getReceivers(stack)[0].getMagazine(stack).getAmount(stack, ctx.inventory) > 0; };
 	
 	/** Returns true if the mag has ammo in it, and the gun is in the locked on state */
-	public static BiFunction<ItemStack, LambdaContext, Boolean> LAMBDA_LOCKON_CAN_FIRE = (stack, ctx) -> { return ctx.config.getReceivers(stack)[0].getMagazine(stack).getAmount(stack) > 0 && ItemGunBaseNT.getIsLockedOn(stack); };
+	public static BiFunction<ItemStack, LambdaContext, Boolean> LAMBDA_LOCKON_CAN_FIRE = (stack, ctx) -> { return ctx.config.getReceivers(stack)[0].getMagazine(stack).getAmount(stack, ctx.inventory) > 0 && ItemGunBaseNT.getIsLockedOn(stack); };
 
 	
 	
@@ -171,15 +171,19 @@ public class Lego {
 
 	/** Spawns an EntityBulletBaseMK4 with the loaded bulletcfg */
 	public static BiConsumer<ItemStack, LambdaContext> LAMBDA_STANDARD_FIRE = (stack, ctx) -> {
-		doStandardFire(stack, ctx, AnimType.CYCLE);
+		doStandardFire(stack, ctx, AnimType.CYCLE, true);
+	};
+	/** Spawns an EntityBulletBaseMK4 with the loaded bulletcfg, ignores wear */
+	public static BiConsumer<ItemStack, LambdaContext> LAMBDA_NOWEAR_FIRE = (stack, ctx) -> {
+		doStandardFire(stack, ctx, AnimType.CYCLE, false);
 	};
 	/** Spawns an EntityBulletBaseMK4 with the loaded bulletcfg, then resets lockon progress */
 	public static BiConsumer<ItemStack, LambdaContext> LAMBDA_LOCKON_FIRE = (stack, ctx) -> {
-		doStandardFire(stack, ctx, AnimType.CYCLE);
+		doStandardFire(stack, ctx, AnimType.CYCLE, true);
 		ItemGunBaseNT.setIsLockedOn(stack, false);
 	};
 	
-	public static void doStandardFire(ItemStack stack, LambdaContext ctx, AnimType anim) {
+	public static void doStandardFire(ItemStack stack, LambdaContext ctx, AnimType anim, boolean calcWear) {
 		EntityLivingBase entity = ctx.entity;
 		EntityPlayer player = ctx.getPlayer();
 		int index = ctx.configIndex;
@@ -188,7 +192,7 @@ public class Lego {
 		float aim = ItemGunBaseNT.getIsAiming(stack) ? 0.25F : 1F;
 		Receiver primary = ctx.config.getReceivers(stack)[0];
 		IMagazine mag = primary.getMagazine(stack);
-		BulletConfig config = (BulletConfig) mag.getType(stack);
+		BulletConfig config = (BulletConfig) mag.getType(stack, ctx.inventory);
 		
 		Vec3 offset = primary.getProjectileOffset(stack);
 		double forwardOffset = offset.xCoord;
@@ -203,15 +207,15 @@ public class Lego {
 		if(config.projectilesMax > config.projectilesMin) projectiles += entity.getRNG().nextInt(config.projectilesMax - config.projectilesMin + 1);
 		
 		for(int i = 0; i < projectiles; i++) {
-			float damage = primary.getBaseDamage(stack) * getStandardWearDamage(stack, ctx.config, index);
-			float spread = primary.getGunSpread(stack) * aim + getStandardWearSpread(stack, ctx.config, index) * 0.125F;
+			float damage = primary.getBaseDamage(stack) * (calcWear ? getStandardWearDamage(stack, ctx.config, index) : 1);
+			float spread = primary.getGunSpread(stack) * aim + (calcWear ? getStandardWearSpread(stack, ctx.config, index) * 0.125F : 0F);
 			EntityBulletBaseMK4 mk4 = new EntityBulletBaseMK4(entity, config, damage, spread, sideOffset, heightOffset, forwardOffset);
 			if(ItemGunBaseNT.getIsLockedOn(stack)) mk4.lockonTarget = entity.worldObj.getEntityByID(ItemGunBaseNT.getLockonTarget(stack));
 			entity.worldObj.spawnEntityInWorld(mk4);
 		}
 		
-		mag.setAmount(stack, mag.getAmount(stack) - 1);
-		ItemGunBaseNT.setWear(stack, index, Math.min(ItemGunBaseNT.getWear(stack, index) + config.wear, ctx.config.getDurability(stack)));
+		mag.useUpAmmo(stack, ctx.inventory, 1);
+		if(calcWear) ItemGunBaseNT.setWear(stack, index, Math.min(ItemGunBaseNT.getWear(stack, index) + config.wear, ctx.config.getDurability(stack)));
 	}
 	
 	public static float getStandardWearSpread(ItemStack stack, GunConfig config, int index) {
