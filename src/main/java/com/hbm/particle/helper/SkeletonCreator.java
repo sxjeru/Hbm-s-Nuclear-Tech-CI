@@ -18,6 +18,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,13 +27,14 @@ import net.minecraft.world.World;
 
 public class SkeletonCreator implements IParticleCreator {
 	
-	public static HashMap<Class, Function<EntityLivingBase, BoneDefinition[]>> skullanizer = new HashMap();
+	public static HashMap<String, Function<EntityLivingBase, BoneDefinition[]>> skullanizer = new HashMap();
 	
-	public static void composeEffect(World world, Entity toSkeletonize) {
+	public static void composeEffect(World world, Entity toSkeletonize, float brightness) {
 		
 		NBTTagCompound data = new NBTTagCompound();
 		data.setString("type", "skeleton");
 		data.setInteger("entityID", toSkeletonize.getEntityId());
+		data.setFloat("brightness", brightness);
 		IParticleCreator.sendPacket(world, toSkeletonize.posX, toSkeletonize.posY, toSkeletonize.posZ, 100, data);
 	}
 
@@ -49,12 +51,14 @@ public class SkeletonCreator implements IParticleCreator {
 		
 		ClientProxy.vanish(entityID);
 		
-		Function<EntityLivingBase, BoneDefinition[]> bonealizer = skullanizer.get(entity.getClass());
+		float brightness = data.getFloat("brightness");
+		
+		Function<EntityLivingBase, BoneDefinition[]> bonealizer = skullanizer.get(entity.getClass().getSimpleName());
 		
 		if(bonealizer != null) {
 			BoneDefinition[] bones = bonealizer.apply(living);
 			for(BoneDefinition bone : bones) {
-				ParticleSkeleton skeleton = new ParticleSkeleton(Minecraft.getMinecraft().getTextureManager(), world, bone.x, bone.y, bone.z, 1F, 1F, 1F, bone.type);
+				ParticleSkeleton skeleton = new ParticleSkeleton(Minecraft.getMinecraft().getTextureManager(), world, bone.x, bone.y, bone.z, brightness, brightness, brightness, bone.type);
 				skeleton.prevRotationYaw = skeleton.rotationYaw = bone.yaw;
 				skeleton.prevRotationPitch = skeleton.rotationPitch = bone.pitch;
 				Minecraft.getMinecraft().effectRenderer.addEffect(skeleton);
@@ -113,26 +117,36 @@ public class SkeletonCreator implements IParticleCreator {
 	
 	public static Function<EntityLivingBase, BoneDefinition[]> BONES_DUMMY = (entity) -> {
 		Vec3NT leftarm = new Vec3NT(0.375, 0, 0).rotateAroundYDeg(-entity.renderYawOffset);
-		Vec3NT forward = new Vec3NT(0, 0, 0.25).rotateAroundYDeg(-entity.renderYawOffset);
 		Vec3NT leftleg = new Vec3NT(0.125, 0, 0).rotateAroundYDeg(-entity.renderYawOffset);
 		return new BoneDefinition[] {
 				new BoneDefinition(EnumSkeletonType.SKULL, -entity.rotationYawHead, entity.rotationPitch, entity.posX, entity.posY + 1.75, entity.posZ),
 				new BoneDefinition(EnumSkeletonType.TORSO, -entity.renderYawOffset, 0, entity.posX, entity.posY + 1.125, entity.posZ),
-				new BoneDefinition(EnumSkeletonType.LIMB, -entity.renderYawOffset, -90, entity.posX + leftarm.xCoord + forward.xCoord, entity.posY + 1.375, entity.posZ + leftarm.zCoord + forward.zCoord),
-				new BoneDefinition(EnumSkeletonType.LIMB, -entity.renderYawOffset, -90, entity.posX - leftarm.xCoord + forward.xCoord, entity.posY + 1.375, entity.posZ - leftarm.zCoord + forward.zCoord),
+				new BoneDefinition(EnumSkeletonType.LIMB, -entity.renderYawOffset, 0, entity.posX + leftarm.xCoord, entity.posY + 1.125, entity.posZ + leftarm.zCoord),
+				new BoneDefinition(EnumSkeletonType.LIMB, -entity.renderYawOffset, 0, entity.posX - leftarm.xCoord, entity.posY + 1.125, entity.posZ - leftarm.zCoord),
 				new BoneDefinition(EnumSkeletonType.LIMB, -entity.renderYawOffset, 0, entity.posX + leftleg.xCoord, entity.posY + 0.625, entity.posZ + leftleg.zCoord),
 				new BoneDefinition(EnumSkeletonType.LIMB, -entity.renderYawOffset, 0, entity.posX - leftleg.xCoord, entity.posY + 0.625, entity.posZ - leftleg.zCoord),
 		};
 	};
 	
 	public static void init() {
-		skullanizer.put(EntityOtherPlayerMP.class, BONES_BIPED);
-		skullanizer.put(EntityClientPlayerMP.class, BONES_BIPED);
-		skullanizer.put(EntityPlayerSP.class, BONES_BIPED);
+		skullanizer.put(EntityOtherPlayerMP.class.getSimpleName(), BONES_BIPED);
+		skullanizer.put(EntityClientPlayerMP.class.getSimpleName(), BONES_BIPED);
+		skullanizer.put(EntityPlayerSP.class.getSimpleName(), BONES_BIPED);
 
-		skullanizer.put(EntityZombie.class, BONES_ZOMBIE);
-		skullanizer.put(EntitySkeleton.class, BONES_ZOMBIE);
+		skullanizer.put(EntityZombie.class.getSimpleName(), BONES_ZOMBIE);
+		skullanizer.put(EntitySkeleton.class.getSimpleName(), BONES_ZOMBIE);
+		skullanizer.put(EntityPigZombie.class.getSimpleName(), BONES_ZOMBIE);
 		
-		skullanizer.put(EntityDummy.class, BONES_DUMMY);
+		skullanizer.put(EntityDummy.class.getSimpleName(), BONES_DUMMY);
+
+		//techguns compat, for some reason
+		//not alwayss accurate because of variable arm position, but better than nothing
+		skullanizer.put("ArmySoldier", BONES_ZOMBIE);
+		skullanizer.put("PsychoSteve", BONES_ZOMBIE);
+		skullanizer.put("SkeletonSoldier", BONES_ZOMBIE);
+		skullanizer.put("ZombieFarmer", BONES_ZOMBIE);
+		skullanizer.put("ZombieMiner", BONES_ZOMBIE);
+		skullanizer.put("ZombiePigmanSoldier", BONES_ZOMBIE);
+		skullanizer.put("ZombieSoldier", BONES_ZOMBIE);
 	}
 }
