@@ -139,6 +139,7 @@ public class GunFactoryClient {
 		bmg50_jhp.setRenderer(LegoClient.RENDER_STANDARD_BULLET);
 		bmg50_ap.setRenderer(LegoClient.RENDER_AP_BULLET);
 		bmg50_du.setRenderer(LegoClient.RENDER_DU_BULLET);
+		bmg50_he.setRenderer(LegoClient.RENDER_HE_BULLET);
 
 		b75.setRenderer(LegoClient.RENDER_AP_BULLET);
 		b75_inc.setRenderer(LegoClient.RENDER_AP_BULLET);
@@ -169,6 +170,7 @@ public class GunFactoryClient {
 		g10_shrapnel.setRenderer(LegoClient.RENDER_STANDARD_BULLET);
 		g10_du.setRenderer(LegoClient.RENDER_DU_BULLET);
 		g10_slug.setRenderer(LegoClient.RENDER_STANDARD_BULLET);
+		g10_explosive.setRenderer(LegoClient.RENDER_HE_BULLET);
 
 		g26_flare.setRenderer(LegoClient.RENDER_FLARE);
 		g26_flare_supply.setRenderer(LegoClient.RENDER_FLARE_SUPPLY);
