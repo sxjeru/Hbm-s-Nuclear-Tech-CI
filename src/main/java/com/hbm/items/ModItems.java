@@ -1469,6 +1469,8 @@ public class ModItems {
 	public static Item gun_stinger;
 	public static Item gun_chemthrower;
 	public static Item gun_amat;
+	public static Item gun_amat_subtlety;
+	public static Item gun_amat_penance;
 	public static Item gun_m2;
 	public static Item gun_autoshotgun;
 	public static Item gun_autoshotgun_shredder;
@@ -6408,6 +6410,8 @@ public class ModItems {
 		GameRegistry.registerItem(gun_stinger, gun_stinger.getUnlocalizedName());
 		GameRegistry.registerItem(gun_chemthrower, gun_chemthrower.getUnlocalizedName());
 		GameRegistry.registerItem(gun_amat, gun_amat.getUnlocalizedName());
+		GameRegistry.registerItem(gun_amat_subtlety, gun_amat_subtlety.getUnlocalizedName());
+		GameRegistry.registerItem(gun_amat_penance, gun_amat_penance.getUnlocalizedName());
 		GameRegistry.registerItem(gun_m2, gun_m2.getUnlocalizedName());
 		GameRegistry.registerItem(gun_autoshotgun, gun_autoshotgun.getUnlocalizedName());
 		GameRegistry.registerItem(gun_autoshotgun_shredder, gun_autoshotgun_shredder.getUnlocalizedName());
