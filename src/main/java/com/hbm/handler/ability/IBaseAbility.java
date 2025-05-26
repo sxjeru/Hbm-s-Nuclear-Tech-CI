@@ -9,6 +9,7 @@ public interface IBaseAbility extends Comparable<IBaseAbility> {
 		return "";
 	}
 
+	// Note: only usable client-side. Server-side, use ChatComponentTranslation manually instead
 	public default String getFullName(int level) {
 		return I18n.format(getName()) + getExtension(level);
 	}
