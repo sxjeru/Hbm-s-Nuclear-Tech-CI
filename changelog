@@ -10,6 +10,10 @@
   * Despite this, sneaking allows the AoE to be disabled
   * Unlike pickaxes, shows a preview for what area is to be mined
   * Due to not being considered a tool like a vanilla one, it's not affected by dig speed penalties from fatigue, being underwater or on a ladder
+* Pipe anchor
+  * Works like a electricity connector but for fluids
+  * Range of 10 blocks
+  * Can be connected using a pipe wrench
 
 ## Changed
 * Updated russian and chinese localization
@@ -52,6 +56,9 @@
   * 256k tanks now use half as much steel
   * Gerald is now way more expensive
   * PWR parts are now subject to expensive mode
+* Fluid container items now keep their custom name when filling or emptying
+* Pneumatic tube endpoints now have a GUI that allows filters to be defined
+* Fortune on drillbits affects the bedrock ore yield now, with each level of fortune adding 25%
 
 ## Fixed
 * Fixed the T-51b set not having radiation resistance
@@ -62,3 +69,5 @@
 * Fixed mining lasers targeting blocks with the "gas" material
 * Fixed gun looping sounds behaving weird when moving while firing
 * Fixed an issue where weapon mods with the highest stat change priority would break the mod sorting, leading to inconsistent behavior
+* Fixed fluid container items breaking when NBT is attached to them
+* Potentially fixed a mod conflict where corium fluid would crash when flowing into water
