@@ -21,10 +21,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 
-public class ArmorNCRPAMelee implements IPAMelee {
+public class ArmorRPAMelee implements IPAMelee {
 
-	@Override public void clickPrimary(ItemStack stack, LambdaContext ctx) { XFactoryPA.doSwing(stack, ctx, GunAnimation.CYCLE, 25); }
-	@Override public void clickSecondary(ItemStack stack, LambdaContext ctx) { XFactoryPA.doSwing(stack, ctx, GunAnimation.ALT_CYCLE, 30); }
+	@Override public void clickPrimary(ItemStack stack, LambdaContext ctx) { XFactoryPA.doSwing(stack, ctx, GunAnimation.CYCLE, 14); }
+	@Override public void clickSecondary(ItemStack stack, LambdaContext ctx) { XFactoryPA.doSwing(stack, ctx, GunAnimation.ALT_CYCLE, 20); }
 	
 	@Override
 	public void orchestra(ItemStack stack, LambdaContext ctx) {
@@ -33,14 +33,14 @@ public class ArmorNCRPAMelee implements IPAMelee {
 		GunAnimation type = ItemGunBaseNT.getLastAnim(stack, ctx.configIndex);
 		int timer = ItemGunBaseNT.getAnimTimer(stack, ctx.configIndex);
 		
-		boolean swings = type == GunAnimation.CYCLE && (timer == 5 || timer == 15);
-		boolean sweep = type == GunAnimation.ALT_CYCLE && timer == 5;
+		boolean swings = type == GunAnimation.CYCLE && (timer == 3 || timer == 9);
+		boolean slap = type == GunAnimation.ALT_CYCLE && timer == 8;
 		
-		if((swings || sweep) && ctx.getPlayer() != null) {
+		if((swings || slap) && ctx.getPlayer() != null) {
 			MovingObjectPosition mop = EntityDamageUtil.getMouseOver(ctx.getPlayer(), 3.0D);
 			
 			if(mop != null) {
-				if(mop.typeOfHit == mop.typeOfHit.ENTITY && mop.entityHit.isEntityAlive()) {
+				if(mop.typeOfHit == mop.typeOfHit.ENTITY) {
 					float damage = swings ? 15F : 35F;
 					float knockback = swings ? 0F : 1.5F;
 					float dt = swings ? 5F : 15F;
@@ -50,12 +50,12 @@ public class ArmorNCRPAMelee implements IPAMelee {
 						EntityLivingBase living = (EntityLivingBase) mop.entityHit;
 						if(living.getMaxHealth() >= 100) damage *= 2.5;
 						EntityDamageUtil.attackEntityFromNT((EntityLivingBase) mop.entityHit, DamageSource.causePlayerDamage(ctx.getPlayer()), damage, true, false, knockback, dt, pierce);
-						if(!living.isEntityAlive()) ConfettiUtil.gib(living);
+						if(living.getRNG().nextInt(slap ? 3 : 10) == 0 && !living.isEntityAlive()) ConfettiUtil.gib(living);
 					} else {
 						mop.entityHit.attackEntityFrom(DamageSource.causePlayerDamage(ctx.getPlayer()), damage);
 					}
 					
-					entity.worldObj.playSoundAtEntity(mop.entityHit, "hbm:weapon.fire.stab", 1F, 0.9F + entity.getRNG().nextFloat() * 0.2F);
+					entity.worldObj.playSoundAtEntity(mop.entityHit, "hbm:weapon.fire.smack", 1F, 0.9F + entity.getRNG().nextFloat() * 0.2F);
 				}
 				if(mop.typeOfHit == mop.typeOfHit.BLOCK) {
 					Block b = entity.worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ);
@@ -68,13 +68,13 @@ public class ArmorNCRPAMelee implements IPAMelee {
 	@Override
 	public BusAnimation playAnim(ItemStack stack, GunAnimation type) {
 		if(type == GunAnimation.EQUIP) return new BusAnimation()
-				.addBus("EQUIP", new BusAnimationSequence().setPos(-1, 0, 0).addPos(0, 0, 0, 750, IType.SIN_DOWN));
+				.addBus("EQUIP", new BusAnimationSequence().setPos(-1, 0, 0).addPos(0, 0, 0, 250, IType.SIN_DOWN));
 		if(type == GunAnimation.CYCLE) return new BusAnimation()
-				.addBus("SWINGRIGHT", new BusAnimationSequence().addPos(1, 0, 0, 250, IType.SIN_DOWN).addPos(0, 0, 0, 500, IType.SIN_FULL))
-				.addBus("SWINGLEFT", new BusAnimationSequence().addPos(0, 0, 0, 500).addPos(1, 0, 0, 250, IType.SIN_DOWN).addPos(0, 0, 0, 500, IType.SIN_FULL));
+				.addBus("SWINGRIGHT", new BusAnimationSequence().addPos(1, 0, 0, 150, IType.SIN_DOWN).addPos(0, 0, 0, 250, IType.SIN_FULL))
+				.addBus("SWINGLEFT", new BusAnimationSequence().addPos(0, 0, 0, 300).addPos(1, 0, 0, 150, IType.SIN_DOWN).addPos(0, 0, 0, 250, IType.SIN_FULL));
 		if(type == GunAnimation.ALT_CYCLE) return new BusAnimation()
-				.addBus("SWEEPTURN", new BusAnimationSequence().addPos(1, 0, 0, 100, IType.LINEAR).hold(350).addPos(0, 0, 0, 500, IType.LINEAR))
-				.addBus("SWEEPCUT", new BusAnimationSequence().hold(100).addPos(1, 0, 0, 250, IType.SIN_DOWN).hold(100).addPos(0, 0, 0, 500, IType.SIN_FULL));
+				.addBus("SLAPTURN", new BusAnimationSequence().addPos(1, 0, 0, 250, IType.LINEAR).hold(150).addPos(0, 0, 0, 350, IType.LINEAR))
+				.addBus("SLAP", new BusAnimationSequence().hold(250).addPos(1, 0, 0, 150, IType.SIN_DOWN).addPos(0, 0, 0, 350, IType.SIN_FULL));
 			
 		return null;
 	}
@@ -83,7 +83,7 @@ public class ArmorNCRPAMelee implements IPAMelee {
 	
 	@Override
 	public void renderFirstPerson(ItemStack stack) {
-		Minecraft.getMinecraft().getTextureManager().bindTexture(ResourceManager.ncrpa_arm);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(ResourceManager.rpa_arm);
 		
 		GL11.glTranslated(0, -1.5, 0.5);
 		double scale = 0.125D;
@@ -92,8 +92,8 @@ public class ArmorNCRPAMelee implements IPAMelee {
 		double[] equip = HbmAnimations.getRelevantTransformation("EQUIP");
 		double swingRight = HbmAnimations.getRelevantTransformation("SWINGRIGHT")[0];
 		double swingLeft = HbmAnimations.getRelevantTransformation("SWINGLEFT")[0];
-		double sweepTurn = HbmAnimations.getRelevantTransformation("SWEEPTURN")[0];
-		double sweepCut = HbmAnimations.getRelevantTransformation("SWEEPCUT")[0];
+		double slapTurn = HbmAnimations.getRelevantTransformation("SLAPTURN")[0];
+		double slap = HbmAnimations.getRelevantTransformation("SLAP")[0];
 		
 		double forwardTilt = 60 - 60 * equip[0];
 		double offsetOutward = 3;
@@ -101,28 +101,28 @@ public class ArmorNCRPAMelee implements IPAMelee {
 		
 		GL11.glPushMatrix();
 		
-		GL11.glTranslated(-14 * swingLeft - 4 * sweepTurn, 6 * sweepCut, 2 * swingLeft + 8 * sweepCut);
-		GL11.glRotated(forwardTilt + swingRight * 40 - 60 * sweepCut, 1, 0, 0);
+		GL11.glTranslated(-12 * swingLeft + 2 * slapTurn - 5 * slap, 6 * slap, 5 * swingLeft + 8 * slap);
+		GL11.glRotated(forwardTilt - swingRight * 20, 1, 0, 0);
 		
 		GL11.glTranslated(offsetOutward, 0, 0);
 		GL11.glTranslated(6, 8, 0);
-		GL11.glRotated(90 * swingLeft, 0, 0, 1);
-		GL11.glRotated(roll + 30 * swingLeft - 90 * sweepTurn, 0, 1, 0);
+		GL11.glRotated(60 * swingLeft + 45 * slap, 0, 0, 1);
+		GL11.glRotated(roll + 15 * swingLeft + 45 * slapTurn, 0, 1, 0);
 		GL11.glTranslated(-6, -8, 0);
-		ResourceManager.armor_ncr.renderPart("LeftArm");
+		ResourceManager.armor_remnant.renderPart("LeftArm");
 		GL11.glPopMatrix();
 
 		GL11.glPushMatrix();
 		
-		GL11.glTranslated(14 * swingRight + 4 * sweepTurn, 6 * sweepCut, 2 * swingRight + 8 * sweepCut);
-		GL11.glRotated(forwardTilt + swingLeft * 40 - 60 * sweepCut, 1, 0, 0);
+		GL11.glTranslated(12 * swingRight - 2 * slapTurn + 5 * slap, 6 * slap, 5 * swingRight + 8 * slap);
+		GL11.glRotated(forwardTilt - swingLeft * 20, 1, 0, 0);
 		
 		GL11.glTranslated(-offsetOutward, 0, 0);
 		GL11.glTranslated(-6, 8, 0);
-		GL11.glRotated(-90 * swingRight, 0, 0, 1);
-		GL11.glRotated(-roll - 30 * swingRight + 90 * sweepTurn, 0, 1, 0);
+		GL11.glRotated(-60 * swingRight - 45 * slap, 0, 0, 1);
+		GL11.glRotated(-roll - 15 * swingRight - 45 * slapTurn, 0, 1, 0);
 		GL11.glTranslated(6, -8, 0);
-		ResourceManager.armor_ncr.renderPart("RightArm");
+		ResourceManager.armor_remnant.renderPart("RightArm");
 		GL11.glPopMatrix();
 	}
 }
